@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>test</title>
+</head>
+<body>
+	<div>
+		<input id="nickName" type="text" name="" placeholder="name" />
+		<input id="age" type="number" name="" placeholder="age" />
+		<button id="submit" type="submit">submit</button>
+	</div>
+	<script type="text/javascript">
+		var domainUrl = location.href;
+		function createXHR(){
+			if (typeof XMLHttpRequest != "undefined"){
+				return new XMLHttpRequest();
+			} else if (typeof ActiveXObject != "undefined"){
+				if (typeof arguments.callee.activeXString != "string"){
+					var versions = [ "MSXML2.XMLHttp.6.0", "MSXML2.XMLHttp.3.0",
+					"MSXML2.XMLHttp"],
+					i, len;
+					for (i=0,len=versions.length; i < len; i++){
+						try {
+							new ActiveXObject(versions[i]);
+							arguments.callee.activeXString = versions[i];
+							break;
+						} catch (ex){
+						//跳过
+						}
+					}
+				}
+				return new ActiveXObject(arguments.callee.activeXString);
+			} else {
+				throw new Error("No XHR object available.");
+			}
+		}
+
+		function addURLParam(url, name, value){
+			url += (url.indexOf('?') === -1) ? '?' : '&';
+			url += encodeURIComponent(name) + '=' + encodeURIComponent(value);
+			return url; 
+		}
+
+		function xhrRequest(url, callback){
+			var xhr = createXHR();
+			xhr.onreadystatechange = function(){
+				if (xhr.readyStae === 4){
+					if ((xhr.status >= 200 && xhr.status < 300) || xhr.status == 304){ //200 表示相应成功 304 表示缓存中存在请求的资源  
+						var str = xhr.status + '====' + xhr.responseText;
+						callback(str);
+					} else {
+						alert("Request was unsuccessful: " + xhr.status);
+					}
+				}
+			};
+			xhr.open("get", url, false);
+			xhr.setRequestHeader("MyHeader", "MyValue");
+			xhr.send(null);
+		}
+
+		var submit = document.getElementById('submit');
+		submit.onclick = function(){
+			var nickName = document.getElementById('nickName').value;
+			var age = document.getElementById('age').value;
+
+			if(!nickName && !age){
+				alert('请填写全部信息')
+			}else{
+				
+				var url = addURLParam(addURLParam(domainUrl+'users/addUser', 'name', nickName), 'age', age);
+				xhrRequest(url, handler)
+			}
+		};
+		function handler(data){
+			console.log(1212312);
+			console.log(data);
+			alert(data);
+			
+			alert(1212312);
+		}
+		
+ 	</script>
+</body>
+</html>
